@@ -48,29 +48,34 @@ $kategori = getAllKategori($pdo);
 <div class="kasir-layout">
     <!-- Kiri: Produk -->
     <div>
-        <div class="toolbar">
+        <div class="toolbar" style="margin-bottom:0.75rem">
             <div class="search-box" style="flex:1">
-                <span class="search-icon">🔍</span>
+                <i data-lucide="search" class="search-icon" style="width:16px;height:16px"></i>
                 <input class="form-control" id="cariProduk" placeholder="Cari produk...">
             </div>
-            <select class="form-control" id="filterKat" style="width:150px">
-                <option value="">Semua</option>
-                <?php foreach ($kategori as $k): ?>
-                <option value="<?= $k['id'] ?>"><?= clean($k['nama']) ?></option>
-                <?php endforeach; ?>
-            </select>
+        </div>
+
+        <div class="cat-tabs" id="catTabs">
+            <button class="cat-tab active" data-kat="" onclick="filterKategori(this)">Semua</button>
+            <?php foreach ($kategori as $k): ?>
+            <button class="cat-tab" data-kat="<?= $k['id'] ?>" onclick="filterKategori(this)">
+                <?= clean($k['nama']) ?>
+            </button>
+            <?php endforeach; ?>
         </div>
 
         <div class="product-grid" id="produkGrid">
             <?php foreach ($produk as $p): ?>
             <div class="product-card"
-                 data-id="<?= $p['id'] ?>"
-                 data-nama="<?= clean($p['nama']) ?>"
-                 data-harga="<?= $p['harga'] ?>"
-                 data-stok="<?= $p['stok'] ?>"
-                 data-kat="<?= $p['kategori_id'] ?>"
-                 onclick="tambahItem(this)">
-                <div class="product-card-icon">📦</div>
+                data-id="<?= $p['id'] ?>"
+                data-nama="<?= clean($p['nama']) ?>"
+                data-harga="<?= $p['harga'] ?>"
+                data-stok="<?= $p['stok'] ?>"
+                data-kat="<?= $p['kategori_id'] ?>"
+                onclick="tambahItem(this)">
+                <div class="product-card-icon">
+                    <i data-lucide="package"></i>
+                </div>
                 <div class="product-card-name"><?= clean($p['nama']) ?></div>
                 <div class="product-card-price"><?= rupiah($p['harga']) ?></div>
                 <div class="product-card-stock">Stok: <?= $p['stok'] ?></div>
@@ -82,38 +87,65 @@ $kategori = getAllKategori($pdo);
     <!-- Kanan: Keranjang -->
     <div class="cart-panel">
         <div class="cart-header">
-            <span>🛒 Keranjang</span>
-            <button class="btn btn-ghost btn-sm" onclick="clearCart()">Kosongkan</button>
+            <div style="display:flex;align-items:center;gap:0.5rem">
+                <i data-lucide="shopping-cart" style="width:18px;height:18px"></i>
+                <span>Pesanan</span>
+            </div>
+            <button class="btn btn-ghost" onclick="clearCart()">
+                <i data-lucide="trash-2" style="width:16px;height:16px"></i>
+                Kosongkan
+            </button>
         </div>
 
         <div class="cart-items" id="cartItems">
-            <div class="cart-empty" id="cartEmpty">Pilih produk di sebelah kiri</div>
+            <div class="cart-empty" id="cartEmpty">
+                <i data-lucide="shopping-bag" style="width:36px;height:36px;color:var(--border);margin-bottom:0.75rem"></i>
+                <p style="font-weight:500;margin-bottom:0.25rem">Keranjang kosong</p>
+                <p style="font-size:0.78rem">Pilih produk di sebelah kiri</p>
+            </div>
         </div>
 
         <div class="cart-footer">
-            <div class="total-row"><span>Subtotal</span><span id="subtotalTxt">Rp 0</span></div>
-            <div class="total-row grand"><span>TOTAL</span><span id="totalTxt">Rp 0</span></div>
-
-            <div class="form-group" style="margin:0.75rem 0">
-                <label class="form-label">Metode Bayar</label>
-                <select class="form-control" id="metodeBayar" onchange="toggleBayar()">
-                    <option value="tunai">💵 Tunai</option>
-                    <option value="transfer">🏦 Transfer</option>
-                    <option value="qris">📱 QRIS</option>
-                </select>
+            <div class="total-row" style="font-size:0.8rem">
+                <span style="color:var(--muted)">Subtotal</span>
+                <span id="subtotalTxt">Rp 0</span>
+            </div>
+            <div class="total-row" style="font-size:0.8rem;margin-bottom:0.75rem">
+                <span style="color:var(--muted)">Pajak (0%)</span>
+                <span>Rp 0</span>
+            </div>
+            <div class="total-row grand">
+                <span>Total</span>
+                <span id="totalTxt">Rp 0</span>
             </div>
 
-            <div class="form-group" style="margin-bottom:0.75rem" id="bayarGroup">
+            <div class="payment-methods">
+                <button class="payment-method active" id="pm-tunai" onclick="setPM('tunai',this)">
+                    <i data-lucide="banknote" style="width:16px;height:16px"></i>
+                    Tunai
+                </button>
+                <button class="payment-method" id="pm-transfer" onclick="setPM('transfer',this)">
+                    <i data-lucide="landmark" style="width:16px;height:16px"></i>
+                    Transfer
+                </button>
+                <button class="payment-method" id="pm-qris" onclick="setPM('qris',this)">
+                    <i data-lucide="qr-code" style="width:16px;height:16px"></i>
+                    QRIS
+                </button>
+            </div>
+
+            <div id="bayarGroup" style="margin-bottom:0.75rem">
                 <label class="form-label">Uang Bayar (Rp)</label>
                 <input class="form-control" type="number" id="inputBayar" placeholder="0" oninput="hitungKembalian()">
             </div>
 
-            <div class="total-row" id="kembalianRow" style="display:none">
-                <span>Kembalian</span>
-                <span id="kembalianTxt" style="color:var(--green);font-weight:700">Rp 0</span>
+            <div class="total-row" id="kembalianRow" style="display:none;margin-bottom:0.75rem">
+                <span style="color:var(--muted)">Kembalian</span>
+                <span id="kembalianTxt" style="color:var(--accent);font-weight:700">Rp 0</span>
             </div>
 
-            <button class="btn btn-success" style="width:100%;margin-top:0.75rem;font-size:0.95rem" onclick="prosesBayar()">
+            <button class="btn btn-success" style="width:100%;font-size:0.95rem;padding:0.85rem;justify-content:center" onclick="prosesBayar()">
+                <i data-lucide="credit-card" style="width:16px;height:16px"></i>
                 Bayar Sekarang
             </button>
         </div>
@@ -219,7 +251,7 @@ async function prosesBayar() {
     if (!items.length) return alert('Keranjang masih kosong!');
 
     const total  = items.reduce((s,i) => s + i.harga * i.qty, 0);
-    const metode = document.getElementById('metodeBayar').value;
+    const metode = selectedMetode;
     const bayar  = metode === 'tunai'
         ? parseFloat(document.getElementById('inputBayar').value) || 0
         : total;
@@ -274,18 +306,38 @@ function selesai() {
     document.getElementById('modalStruk').classList.remove('show');
 }
 
-document.getElementById('cariProduk').addEventListener('input', filterProduk);
-document.getElementById('filterKat').addEventListener('change', filterProduk);
+document.getElementById('cariProduk').addEventListener('input', function() {
+    const aktifKat = document.querySelector('.cat-tab.active')?.dataset.kat || '';
+    filterProdukAll(aktifKat, this.value.toLowerCase());
+});
 
-function filterProduk() {
+function filterKategori(el) {
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const kat = el.dataset.kat;
     const q   = document.getElementById('cariProduk').value.toLowerCase();
-    const kat = document.getElementById('filterKat').value;
+    filterProdukAll(kat, q);
+}
+
+function filterProdukAll(kat = '', q = '') {
     document.querySelectorAll('.product-card').forEach(el => {
         const cocokNama = el.dataset.nama.toLowerCase().includes(q);
         const cocokKat  = !kat || el.dataset.kat === kat;
         el.style.display = cocokNama && cocokKat ? '' : 'none';
     });
 }
+
+let selectedMetode = 'tunai';
+
+function setPM(metode, el) {
+    selectedMetode = metode;
+    document.querySelectorAll('.payment-method').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('bayarGroup').style.display = metode === 'tunai' ? '' : 'none';
+    document.getElementById('kembalianRow').style.display = 'none';
+    document.getElementById('inputBayar').value = '';
+}
+
 </script>
 
 <?php require_once '../includes/footer.php'; ?>
