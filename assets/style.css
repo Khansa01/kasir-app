@@ -887,3 +887,19 @@ select.form-control {
 .product-grid {
   padding: 0.5rem 0.25rem 0.5rem 0.5rem;
 }
+
+@media print {
+    body { background: #fff; color: #000; }
+    .no-print { display: none !important; }
+    
+    @page {
+        size: 80mm auto;
+        margin: 0;
+    }
+    
+    .struk {
+        width: 80mm;
+        font-family: monospace;
+        font-size: 11px;
+    }
+}
