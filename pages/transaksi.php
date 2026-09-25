@@ -271,7 +271,10 @@ async function prosesBayar() {
     tampilStruk(data, items);
 }
 
+let lastTrxId = 0;
+
 function tampilStruk(data, items) {
+    lastTrxId = data.trx_id;
     const tgl  = new Date().toLocaleString('id-ID');
     let rows   = items.map(i =>
         `${i.nama.substring(0,18).padEnd(18)}  ${i.qty} x ${fmt(i.harga)} = ${fmt(i.harga*i.qty)}`
@@ -297,7 +300,9 @@ KEMBALIAN : ${fmt(data.kembalian)}
     document.getElementById('modalStruk').classList.add('show');
 }
 
-function printStruk() { window.print(); }
+function printStruk() {
+    window.open('../pages/struk.php?id=' + lastTrxId, '_blank');
+}
 
 function selesai() {
     cart = {};

@@ -36,7 +36,7 @@ A modern, lightweight Point of Sale (POS) web application built with pure PHP an
 
 ## 📁 Project Structure
 
-````text
+```text
 kasir-app/
 ├── auth/
 │ ├── login.php
@@ -82,7 +82,7 @@ kasir-app/
 ```bash
 git clone https://github.com/Khansa01/kasir-app.git
 cd kasir-app
-````
+```
 
 **2. Import the database**
 
