@@ -42,14 +42,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-            --bg: #0f1117;
-            --surface: #1a1d27;
-            --border: #2a2d3e;
-            --accent: #6c63ff;
-            --accent-hover: #574fd6;
-            --text: #e8e9f0;
-            --muted: #7c7f94;
-            --error: #ff5c5c;
+            --bg: #f5f6fa;
+            --surface: #ffffff;
+            --border: #e2e4ed;
+            --accent: #16a34a;
+            --accent-hover: #15803d;
+            --text: #1a1d2e;
+            --muted: #6b7280;
+            --error: #dc2626;
         }
         body {
             font-family: 'Inter', sans-serif;
